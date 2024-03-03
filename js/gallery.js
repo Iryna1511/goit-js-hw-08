@@ -65,7 +65,7 @@ const images = [
 ];
 
 const galleryEl = document.querySelector(".gallery");
-const items = images
+const createMarkUp = images
   .map(
     ({ preview, original, description }) => `<li class="gallery-item">
   <a class="gallery-link" href="${original}">
@@ -80,4 +80,32 @@ const items = images
 `
   )
   .join(" ");
-galleryEl.insertAdjacentHTML("beforeend", items);
+galleryEl.insertAdjacentHTML("beforeend", createMarkUp);
+
+galleryEl.addEventListener("click", openModal);
+
+function openModal(event) {
+  event.preventDefault();
+  if (event.currentTarget === event.target) return;
+  const modalImg = event.target.dataset.source;
+
+  const instance = basicLightbox.create(
+    `
+    <div class="modal">
+        <img src="${modalImg}" alt="" width="1112" height="640" />
+    </div>
+`,
+    {
+      onShow: () => document.addEventListener("keydown", handleKeyEscape),
+      onClose: () => document.removeEventListener("keydown", handleKeyEscape),
+    }
+  );
+
+  function handleKeyEscape(event) {
+    if (event.key === "Escape") {
+      instance.close();
+    }
+  }
+
+  instance.show();
+}
